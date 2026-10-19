@@ -1,0 +1,8 @@
+on_actions = {
+
+	on_monthly = {
+		effect = {
+			cap_monthly_surrender_drift = yes
+		}
+	}
+}

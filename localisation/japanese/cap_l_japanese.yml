@@ -1,0 +1,3 @@
+﻿l_japanese:
+ cap_war_exhaustion: "戦争疲労"
+ cap_war_exhaustion_desc: "前線での敗北により、毎月、安定度と戦争協力度のマルス値が蓄積される。基礎値には影響せず、降伏から遠い間は少しずつ解消されていく。"

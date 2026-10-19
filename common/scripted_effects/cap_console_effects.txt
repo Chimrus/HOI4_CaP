@@ -1,0 +1,40 @@
+# Console helpers, not used by the mod itself. The console command "effect [TAG] <name>" runs a scripted effect
+# without arguments, so the amount is part of the name. The penalty is in percentage points (see cap_surrender_effects.txt)
+# and stays within 0..penalty limit; "up" makes the penalty bigger, "down" smaller.
+#
+#   effect cap_stab_pen_up_10      stability penalty +10 (current country)
+#   effect GER cap_ws_pen_down_1   war support penalty -1 for GER
+#   effect cap_pen_clear           both penalties back to 0
+#
+# Steps: 1, 10, 100 for cap_stab_pen_up_* / cap_stab_pen_down_* (stability) and cap_ws_pen_up_* / cap_ws_pen_down_* (war support).
+
+cap_console_change = {
+	cap_read_rules = yes
+	add_to_variable = { cap_stab_pen = cap_con_stab }
+	add_to_variable = { cap_ws_pen = cap_con_ws }
+	cap_refresh_penalty = yes
+}
+
+cap_pen_clear = {
+	cap_read_rules = yes
+	set_variable = { cap_stab_pen = 0 }
+	set_variable = { cap_ws_pen = 0 }
+	cap_refresh_penalty = yes
+}
+
+
+cap_stab_pen_up_1 = { set_temp_variable = { cap_con_stab = -1 } set_temp_variable = { cap_con_ws = 0 } cap_console_change = yes }
+cap_stab_pen_up_10 = { set_temp_variable = { cap_con_stab = -10 } set_temp_variable = { cap_con_ws = 0 } cap_console_change = yes }
+cap_stab_pen_up_100 = { set_temp_variable = { cap_con_stab = -100 } set_temp_variable = { cap_con_ws = 0 } cap_console_change = yes }
+
+cap_stab_pen_down_1 = { set_temp_variable = { cap_con_stab = 1 } set_temp_variable = { cap_con_ws = 0 } cap_console_change = yes }
+cap_stab_pen_down_10 = { set_temp_variable = { cap_con_stab = 10 } set_temp_variable = { cap_con_ws = 0 } cap_console_change = yes }
+cap_stab_pen_down_100 = { set_temp_variable = { cap_con_stab = 100 } set_temp_variable = { cap_con_ws = 0 } cap_console_change = yes }
+
+cap_ws_pen_up_1 = { set_temp_variable = { cap_con_stab = 0 } set_temp_variable = { cap_con_ws = -1 } cap_console_change = yes }
+cap_ws_pen_up_10 = { set_temp_variable = { cap_con_stab = 0 } set_temp_variable = { cap_con_ws = -10 } cap_console_change = yes }
+cap_ws_pen_up_100 = { set_temp_variable = { cap_con_stab = 0 } set_temp_variable = { cap_con_ws = -100 } cap_console_change = yes }
+
+cap_ws_pen_down_1 = { set_temp_variable = { cap_con_stab = 0 } set_temp_variable = { cap_con_ws = 1 } cap_console_change = yes }
+cap_ws_pen_down_10 = { set_temp_variable = { cap_con_stab = 0 } set_temp_variable = { cap_con_ws = 10 } cap_console_change = yes }
+cap_ws_pen_down_100 = { set_temp_variable = { cap_con_stab = 0 } set_temp_variable = { cap_con_ws = 100 } cap_console_change = yes }

@@ -1,0 +1,219 @@
+# Monthly stability / war support penalty driven by surrender_progress.
+#
+# Works like the vanilla war support maluses (casualties, bombing, sunk convoys): base stability and
+# war support are never touched. The mod keeps two penalty pools per country, cap_stab_pen and
+# cap_ws_pen (percentage points, from -"penalty limit" up to 0), and applies them through the dynamic
+# modifier cap_war_exhaustion, which reads cap_stab_mod / cap_ws_mod (pool / 100) for its
+# stability_factor and war_support_factor.
+#
+# Every number comes from a game rule (common/game_rules/cap_game_rules.txt); the values assigned
+# in cap_monthly_surrender_drift are the defaults and match the default option of each rule.
+#
+#   at war, surrender_progress > loss start    pools grow, easeInOutQuad up to the "maximum drain at" point
+#   recovery below <= progress <= loss start   nothing
+#   surrender_progress < recovery below        pools shrink towards 0, at war and in peace; at war optionally
+#                                              scaled by enemies_strength_ratio (max 1), in peace always full;
+#                                              they never go above 0, so nothing is gained
+#
+# Countries that have not capitulated and that the "affected countries" rule includes are touched, if they
+# are at war or still carry a penalty.
+
+cap_monthly_surrender_drift = {
+	if = {
+		limit = {
+			has_capitulated = no
+			OR = {
+				has_war = yes
+				check_variable = { cap_stab_pen < 0 }
+				check_variable = { cap_ws_pen < 0 }
+			}
+			OR = {
+				has_game_rule = { rule = cap_affected option = EVERYONE }
+				AND = {
+					has_game_rule = { rule = cap_affected option = AI_ONLY }
+					is_ai = yes
+				}
+				AND = {
+					has_game_rule = { rule = cap_affected option = PLAYERS_ONLY }
+					is_ai = no
+				}
+			}
+		}
+		cap_read_rules = yes
+
+		set_temp_variable = { cap_s = surrender_progress }
+		set_temp_variable = { cap_stab_delta = 0 }
+		set_temp_variable = { cap_ws_delta = 0 }
+		if = {
+			limit = {
+				has_war = yes
+				check_variable = { cap_s > cap_p_loss_start }
+			}
+			cap_calc_surrender_loss = yes
+		}
+		if = {
+			limit = {
+				check_variable = { cap_s < cap_p_rec_below }
+				OR = {
+					check_variable = { cap_stab_pen < 0 }
+					check_variable = { cap_ws_pen < 0 }
+				}
+			}
+			cap_calc_recovery = yes
+		}
+		cap_apply_penalty = yes
+	}
+}
+
+# Fills the cap_p_* temp variables: the defaults first (they match the default option of each rule), then the chosen options.
+cap_read_rules = {
+	set_temp_variable = { cap_p_loss_start = 0.2 }
+	set_temp_variable = { cap_p_loss_full = 0.8 }
+	set_temp_variable = { cap_p_stab_max = 2 }
+	set_temp_variable = { cap_p_ws_max = 4 }
+	set_temp_variable = { cap_p_pen_limit = 300 }
+	set_temp_variable = { cap_p_rec_below = 0.05 }
+	set_temp_variable = { cap_p_rec_stab = 0.25 }
+	set_temp_variable = { cap_p_rec_ws = 0.5 }
+	set_temp_variable = { cap_p_rec_scale = 1 }
+
+	if = { limit = { has_game_rule = { rule = cap_loss_start option = P10 } } set_temp_variable = { cap_p_loss_start = 0.1 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_start option = P15 } } set_temp_variable = { cap_p_loss_start = 0.15 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_start option = P20 } } set_temp_variable = { cap_p_loss_start = 0.2 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_start option = P30 } } set_temp_variable = { cap_p_loss_start = 0.3 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_start option = P40 } } set_temp_variable = { cap_p_loss_start = 0.4 } }
+
+	if = { limit = { has_game_rule = { rule = cap_loss_full option = P60 } } set_temp_variable = { cap_p_loss_full = 0.6 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_full option = P70 } } set_temp_variable = { cap_p_loss_full = 0.7 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_full option = P80 } } set_temp_variable = { cap_p_loss_full = 0.8 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_full option = P90 } } set_temp_variable = { cap_p_loss_full = 0.9 } }
+	if = { limit = { has_game_rule = { rule = cap_loss_full option = P100 } } set_temp_variable = { cap_p_loss_full = 1 } }
+
+	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = DISABLED } } set_temp_variable = { cap_p_stab_max = 0 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P1 } } set_temp_variable = { cap_p_stab_max = 1 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P2 } } set_temp_variable = { cap_p_stab_max = 2 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P3 } } set_temp_variable = { cap_p_stab_max = 3 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P4 } } set_temp_variable = { cap_p_stab_max = 4 } }
+
+	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = DISABLED } } set_temp_variable = { cap_p_ws_max = 0 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P2 } } set_temp_variable = { cap_p_ws_max = 2 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P4 } } set_temp_variable = { cap_p_ws_max = 4 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P6 } } set_temp_variable = { cap_p_ws_max = 6 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P8 } } set_temp_variable = { cap_p_ws_max = 8 } }
+
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P25 } } set_temp_variable = { cap_p_pen_limit = 25 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P50 } } set_temp_variable = { cap_p_pen_limit = 50 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P100 } } set_temp_variable = { cap_p_pen_limit = 100 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P150 } } set_temp_variable = { cap_p_pen_limit = 150 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P200 } } set_temp_variable = { cap_p_pen_limit = 200 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P250 } } set_temp_variable = { cap_p_pen_limit = 250 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P300 } } set_temp_variable = { cap_p_pen_limit = 300 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P400 } } set_temp_variable = { cap_p_pen_limit = 400 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P500 } } set_temp_variable = { cap_p_pen_limit = 500 } }
+	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P1000 } } set_temp_variable = { cap_p_pen_limit = 1000 } }
+
+	if = { limit = { has_game_rule = { rule = cap_recovery_below option = DISABLED } } set_temp_variable = { cap_p_rec_below = 0 } }
+	if = { limit = { has_game_rule = { rule = cap_recovery_below option = P3 } } set_temp_variable = { cap_p_rec_below = 0.03 } }
+	if = { limit = { has_game_rule = { rule = cap_recovery_below option = P5 } } set_temp_variable = { cap_p_rec_below = 0.05 } }
+	if = { limit = { has_game_rule = { rule = cap_recovery_below option = P10 } } set_temp_variable = { cap_p_rec_below = 0.1 } }
+
+	if = { limit = { has_game_rule = { rule = cap_stab_recovery option = P0_1 } } set_temp_variable = { cap_p_rec_stab = 0.1 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_recovery option = P0_25 } } set_temp_variable = { cap_p_rec_stab = 0.25 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_recovery option = P0_5 } } set_temp_variable = { cap_p_rec_stab = 0.5 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_recovery option = P1 } } set_temp_variable = { cap_p_rec_stab = 1 } }
+
+	if = { limit = { has_game_rule = { rule = cap_ws_recovery option = P0_25 } } set_temp_variable = { cap_p_rec_ws = 0.25 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_recovery option = P0_5 } } set_temp_variable = { cap_p_rec_ws = 0.5 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_recovery option = P1 } } set_temp_variable = { cap_p_rec_ws = 1 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_recovery option = P2 } } set_temp_variable = { cap_p_rec_ws = 2 } }
+
+	if = { limit = { has_game_rule = { rule = cap_recovery_scale option = yes } } set_temp_variable = { cap_p_rec_scale = 1 } }
+	if = { limit = { has_game_rule = { rule = cap_recovery_scale option = no } } set_temp_variable = { cap_p_rec_scale = 0 } }
+}
+
+cap_calc_surrender_loss = {
+	if = {
+		limit = {
+			OR = {
+				check_variable = { cap_p_stab_max > 0 }
+				check_variable = { cap_p_ws_max > 0 }
+			}
+		}
+		set_temp_variable = { cap_width = { value = cap_p_loss_full  subtract = cap_p_loss_start } }
+		set_temp_variable = {
+			cap_t = { value = cap_s  subtract = cap_p_loss_start  divide = cap_width  clamp = { min = 0 max = 1 } }
+		}
+		if = {
+			limit = { check_variable = { cap_t < 0.5 } }
+			set_temp_variable = { cap_ease = { value = cap_t  multiply = cap_t  multiply = 2 } }
+		}
+		if = {
+			limit = { NOT = { check_variable = { cap_t < 0.5 } } }
+			set_temp_variable = { cap_u = { value = 1  subtract = cap_t } }
+			set_temp_variable = { cap_u_sq = { value = cap_u  multiply = cap_u  multiply = 2 } }
+			set_temp_variable = { cap_ease = { value = 1  subtract = cap_u_sq } }
+		}
+		set_temp_variable = { cap_stab_delta = { value = cap_ease  multiply = cap_p_stab_max  multiply = -1 } }
+		set_temp_variable = { cap_ws_delta = { value = cap_ease  multiply = cap_p_ws_max  multiply = -1 } }
+	}
+}
+
+# At war the payoff is scaled by the strength ratio (if the rule is on); in peace there are no enemies, so it is full.
+cap_calc_recovery = {
+	set_temp_variable = { cap_k = 1 }
+	if = {
+		limit = {
+			has_war = yes
+			check_variable = { cap_p_rec_scale = 1 }
+		}
+		set_temp_variable = {
+			cap_k = { value = enemies_strength_ratio  clamp = { min = 0 max = 1 } }
+		}
+	}
+	set_temp_variable = { cap_stab_delta = { value = cap_k  multiply = cap_p_rec_stab } }
+	set_temp_variable = { cap_ws_delta = { value = cap_k  multiply = cap_p_rec_ws } }
+}
+
+# The pools are in percentage points and keep 3 decimals, so no rounding is needed.
+cap_apply_penalty = {
+	if = {
+		limit = {
+			OR = {
+				NOT = { check_variable = { cap_stab_delta = 0 } }
+				NOT = { check_variable = { cap_ws_delta = 0 } }
+			}
+		}
+		add_to_variable = { cap_stab_pen = cap_stab_delta }
+		add_to_variable = { cap_ws_pen = cap_ws_delta }
+		cap_refresh_penalty = yes
+	}
+}
+
+# Clamps the pools to -"penalty limit"..0 (a loss can never push them below the limit, a recovery can never
+# lift them above 0) and brings the dynamic modifier in line with them. Needs cap_p_pen_limit (cap_read_rules).
+cap_refresh_penalty = {
+	set_temp_variable = { cap_pen_min = { value = cap_p_pen_limit  multiply = -1 } }
+	clamp_variable = { var = cap_stab_pen  min = cap_pen_min  max = 0 }
+	clamp_variable = { var = cap_ws_pen  min = cap_pen_min  max = 0 }
+
+	if = {
+		limit = {
+			OR = {
+				check_variable = { cap_stab_pen < 0 }
+				check_variable = { cap_ws_pen < 0 }
+			}
+		}
+		set_variable = { cap_stab_mod = { value = cap_stab_pen  divide = 100 } }
+		set_variable = { cap_ws_mod = { value = cap_ws_pen  divide = 100 } }
+		add_dynamic_modifier = { modifier = cap_war_exhaustion }
+		force_update_dynamic_modifier = yes
+	}
+	if = {
+		limit = {
+			check_variable = { cap_stab_pen = 0 }
+			check_variable = { cap_ws_pen = 0 }
+			has_dynamic_modifier = { modifier = cap_war_exhaustion }
+		}
+		remove_dynamic_modifier = { modifier = cap_war_exhaustion }
+	}
+}

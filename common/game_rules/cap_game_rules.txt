@@ -1,0 +1,251 @@
+# Please surrender: tunable parameters, read by common/scripted_effects/cap_surrender_effects.txt.
+# "default" marks the default option of each rule. Numeric labels are language neutral
+# (cap_rules_numbers_l_<lang>.yml); the other texts are in cap_rules_l_<lang>.yml.
+
+cap_affected = {
+	name = "CAP_RULE_AFFECTED"
+	desc = "CAP_RULE_AFFECTED_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	default = {
+		name = EVERYONE
+		text = "CAP_OPT_ALL"
+	}
+	option = {
+		name = AI_ONLY
+		text = "CAP_OPT_AI_ONLY"
+	}
+	option = {
+		name = PLAYERS_ONLY
+		text = "CAP_OPT_PLAYERS_ONLY"
+	}
+}
+
+cap_loss_start = {
+	name = "CAP_RULE_LOSS_START"
+	desc = "CAP_RULE_LOSS_START_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = P10
+		text = "CAP_PCT_10"
+	}
+	option = {
+		name = P15
+		text = "CAP_PCT_15"
+	}
+	default = {
+		name = P20
+		text = "CAP_PCT_20"
+	}
+	option = {
+		name = P30
+		text = "CAP_PCT_30"
+	}
+	option = {
+		name = P40
+		text = "CAP_PCT_40"
+	}
+}
+
+cap_loss_full = {
+	name = "CAP_RULE_LOSS_FULL"
+	desc = "CAP_RULE_LOSS_FULL_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = P60
+		text = "CAP_PCT_60"
+	}
+	option = {
+		name = P70
+		text = "CAP_PCT_70"
+	}
+	default = {
+		name = P80
+		text = "CAP_PCT_80"
+	}
+	option = {
+		name = P90
+		text = "CAP_PCT_90"
+	}
+	option = {
+		name = P100
+		text = "CAP_PCT_100"
+	}
+}
+
+cap_stab_loss_max = {
+	name = "CAP_RULE_STAB_LOSS_MAX"
+	desc = "CAP_RULE_STAB_LOSS_MAX_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = DISABLED
+		text = "CAP_OPT_OFF"
+	}
+	option = {
+		name = P1
+		text = "CAP_PCT_1"
+	}
+	default = {
+		name = P2
+		text = "CAP_PCT_2"
+	}
+	option = {
+		name = P3
+		text = "CAP_PCT_3"
+	}
+	option = {
+		name = P4
+		text = "CAP_PCT_4"
+	}
+}
+
+cap_ws_loss_max = {
+	name = "CAP_RULE_WS_LOSS_MAX"
+	desc = "CAP_RULE_WS_LOSS_MAX_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = DISABLED
+		text = "CAP_OPT_OFF"
+	}
+	option = {
+		name = P2
+		text = "CAP_PCT_2"
+	}
+	default = {
+		name = P4
+		text = "CAP_PCT_4"
+	}
+	option = {
+		name = P6
+		text = "CAP_PCT_6"
+	}
+	option = {
+		name = P8
+		text = "CAP_PCT_8"
+	}
+}
+
+cap_pen_limit = {
+	name = "CAP_RULE_PEN_LIMIT"
+	desc = "CAP_RULE_PEN_LIMIT_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = P25
+		text = "CAP_PCT_25"
+	}
+	option = {
+		name = P50
+		text = "CAP_PCT_50"
+	}
+	option = {
+		name = P100
+		text = "CAP_PCT_100"
+	}
+	option = {
+		name = P150
+		text = "CAP_PCT_150"
+	}
+	option = {
+		name = P200
+		text = "CAP_PCT_200"
+	}
+	option = {
+		name = P250
+		text = "CAP_PCT_250"
+	}
+	default = {
+		name = P300
+		text = "CAP_PCT_300"
+	}
+	option = {
+		name = P400
+		text = "CAP_PCT_400"
+	}
+	option = {
+		name = P500
+		text = "CAP_PCT_500"
+	}
+	option = {
+		name = P1000
+		text = "CAP_PCT_1000"
+	}
+}
+
+cap_recovery_below = {
+	name = "CAP_RULE_RECOVERY_BELOW"
+	desc = "CAP_RULE_RECOVERY_BELOW_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = DISABLED
+		text = "CAP_OPT_OFF"
+	}
+	option = {
+		name = P3
+		text = "CAP_PCT_3"
+	}
+	default = {
+		name = P5
+		text = "CAP_PCT_5"
+	}
+	option = {
+		name = P10
+		text = "CAP_PCT_10"
+	}
+}
+
+cap_stab_recovery = {
+	name = "CAP_RULE_STAB_RECOVERY"
+	desc = "CAP_RULE_STAB_RECOVERY_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = P0_1
+		text = "CAP_PCT_0_1"
+	}
+	default = {
+		name = P0_25
+		text = "CAP_PCT_0_25"
+	}
+	option = {
+		name = P0_5
+		text = "CAP_PCT_0_5"
+	}
+	option = {
+		name = P1
+		text = "CAP_PCT_1"
+	}
+}
+
+cap_ws_recovery = {
+	name = "CAP_RULE_WS_RECOVERY"
+	desc = "CAP_RULE_WS_RECOVERY_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = P0_25
+		text = "CAP_PCT_0_25"
+	}
+	default = {
+		name = P0_5
+		text = "CAP_PCT_0_5"
+	}
+	option = {
+		name = P1
+		text = "CAP_PCT_1"
+	}
+	option = {
+		name = P2
+		text = "CAP_PCT_2"
+	}
+}
+
+cap_recovery_scale = {
+	name = "CAP_RULE_RECOVERY_SCALE"
+	desc = "CAP_RULE_RECOVERY_SCALE_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	default = {
+		name = yes
+		text = "RULE_OPTION_YES"
+	}
+	option = {
+		name = no
+		text = "RULE_OPTION_NO"
+	}
+}

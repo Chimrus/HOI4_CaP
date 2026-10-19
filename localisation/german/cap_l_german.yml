@@ -1,0 +1,3 @@
+﻿l_german:
+ cap_war_exhaustion: "Kriegsmüdigkeit"
+ cap_war_exhaustion_desc: "Niederlagen an der Front bauen jeden Monat einen Malus auf Stabilität und Kriegsunterstützung auf. Er berührt die Basiswerte nicht und wird nach und nach abgebaut, solange das Land weit von der Kapitulation entfernt ist."
