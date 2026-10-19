@@ -2,7 +2,7 @@
 # The values are taken from the country variables cap_stab_mod / cap_ws_mod (negative fractions);
 # the modifier is added when a pool first goes below 0 and removed once both are back at 0.
 cap_war_exhaustion = {
-	icon = GFX_idea_unknown
+	icon = GFX_idea_BEL_the_kings_surrender
 	stability_factor = cap_stab_mod
 	war_support_factor = cap_ws_mod
 }
