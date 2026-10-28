@@ -1,8 +1,15 @@
 on_actions = {
 
-	on_monthly = {
+	on_weekly = {
 		effect = {
-			cap_monthly_surrender_drift = yes
+			cap_weekly_surrender_drift = yes
+		}
+	}
+
+	# ROOT is the capitulated country
+	on_capitulation = {
+		effect = {
+			cap_reset_penalty = yes
 		}
 	}
 }

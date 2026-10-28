@@ -1,3 +1,3 @@
 ﻿l_simp_chinese:
  cap_war_exhaustion: "战争疲惫"
- cap_war_exhaustion_desc: "前线的失利会每月累积稳定度和战争支持度惩罚。该惩罚不会改变基础值，并会在国家远未接近投降时逐步消减。"
+ cap_war_exhaustion_desc: "前线的失利会每周累积稳定度和战争支持度惩罚。该惩罚不会改变基础值，并会在国家远未接近投降时逐步消减。"

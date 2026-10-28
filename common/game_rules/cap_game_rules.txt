@@ -81,10 +81,18 @@ cap_stab_loss_max = {
 		text = "CAP_OPT_OFF"
 	}
 	option = {
+		name = P0_25
+		text = "CAP_PCT_0_25"
+	}
+	option = {
+		name = P0_5
+		text = "CAP_PCT_0_5"
+	}
+	default = {
 		name = P1
 		text = "CAP_PCT_1"
 	}
-	default = {
+	option = {
 		name = P2
 		text = "CAP_PCT_2"
 	}
@@ -107,10 +115,18 @@ cap_ws_loss_max = {
 		text = "CAP_OPT_OFF"
 	}
 	option = {
+		name = P0_5
+		text = "CAP_PCT_0_5"
+	}
+	option = {
+		name = P1
+		text = "CAP_PCT_1"
+	}
+	default = {
 		name = P2
 		text = "CAP_PCT_2"
 	}
-	default = {
+	option = {
 		name = P4
 		text = "CAP_PCT_4"
 	}
@@ -121,6 +137,28 @@ cap_ws_loss_max = {
 	option = {
 		name = P8
 		text = "CAP_PCT_8"
+	}
+}
+
+cap_major_scale = {
+	name = "CAP_RULE_MAJOR_SCALE"
+	desc = "CAP_RULE_MAJOR_SCALE_DESC"
+	group = "RULE_GROUP_GAMEPLAY"
+	option = {
+		name = P25
+		text = "CAP_PCT_25"
+	}
+	default = {
+		name = P50
+		text = "CAP_PCT_50"
+	}
+	option = {
+		name = P75
+		text = "CAP_PCT_75"
+	}
+	option = {
+		name = P100
+		text = "CAP_PCT_100"
 	}
 }
 

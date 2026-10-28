@@ -1,4 +1,4 @@
-# Monthly stability / war support penalty driven by surrender_progress.
+# Weekly stability / war support penalty driven by surrender_progress.
 #
 # Works like the vanilla war support maluses (casualties, bombing, sunk convoys): base stability and
 # war support are never touched. The mod keeps two penalty pools per country, cap_stab_pen and
@@ -7,18 +7,24 @@
 # stability_factor and war_support_factor.
 #
 # Every number comes from a game rule (common/game_rules/cap_game_rules.txt); the values assigned
-# in cap_monthly_surrender_drift are the defaults and match the default option of each rule.
+# in cap_weekly_surrender_drift are the defaults and match the default option of each rule.
 #
-#   at war, surrender_progress > loss start    pools grow, easeInOutQuad up to the "maximum drain at" point
+#   at war, surrender_progress > loss start    pools grow, easeInOutQuad up to the "maximum drain at" point;
+#                                              major countries (is_major) grow by the "major countries" multiplier only
 #   recovery below <= progress <= loss start   nothing
 #   surrender_progress < recovery below        pools shrink towards 0, at war and in peace; at war optionally
 #                                              scaled by enemies_strength_ratio (max 1), in peace always full;
 #                                              they never go above 0, so nothing is gained
 #
 # Countries that have not capitulated and that the "affected countries" rule includes are touched, if they
-# are at war or still carry a penalty.
+# are at war or still carry a penalty. A country that capitulates loses its penalty (on_capitulation, and the
+# weekly drift for ones that were already capitulated), since it has no use for the malus any more.
 
-cap_monthly_surrender_drift = {
+cap_weekly_surrender_drift = {
+	if = {
+		limit = { has_capitulated = yes }
+		cap_reset_penalty = yes
+	}
 	if = {
 		limit = {
 			has_capitulated = no
@@ -65,12 +71,29 @@ cap_monthly_surrender_drift = {
 	}
 }
 
+# Wipes both pools and the dynamic modifier. Needs no rules, so it can run from on_capitulation.
+cap_reset_penalty = {
+	if = {
+		limit = {
+			OR = {
+				check_variable = { cap_stab_pen < 0 }
+				check_variable = { cap_ws_pen < 0 }
+				has_dynamic_modifier = { modifier = cap_war_exhaustion }
+			}
+		}
+		set_variable = { cap_stab_pen = 0 }
+		set_variable = { cap_ws_pen = 0 }
+		remove_dynamic_modifier = { modifier = cap_war_exhaustion }
+	}
+}
+
 # Fills the cap_p_* temp variables: the defaults first (they match the default option of each rule), then the chosen options.
 cap_read_rules = {
 	set_temp_variable = { cap_p_loss_start = 0.2 }
 	set_temp_variable = { cap_p_loss_full = 0.8 }
-	set_temp_variable = { cap_p_stab_max = 2 }
-	set_temp_variable = { cap_p_ws_max = 4 }
+	set_temp_variable = { cap_p_stab_max = 1 }
+	set_temp_variable = { cap_p_ws_max = 2 }
+	set_temp_variable = { cap_p_major_scale = 0.5 }
 	set_temp_variable = { cap_p_pen_limit = 300 }
 	set_temp_variable = { cap_p_rec_below = 0.05 }
 	set_temp_variable = { cap_p_rec_stab = 0.25 }
@@ -90,16 +113,25 @@ cap_read_rules = {
 	if = { limit = { has_game_rule = { rule = cap_loss_full option = P100 } } set_temp_variable = { cap_p_loss_full = 1 } }
 
 	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = DISABLED } } set_temp_variable = { cap_p_stab_max = 0 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P0_25 } } set_temp_variable = { cap_p_stab_max = 0.25 } }
+	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P0_5 } } set_temp_variable = { cap_p_stab_max = 0.5 } }
 	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P1 } } set_temp_variable = { cap_p_stab_max = 1 } }
 	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P2 } } set_temp_variable = { cap_p_stab_max = 2 } }
 	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P3 } } set_temp_variable = { cap_p_stab_max = 3 } }
 	if = { limit = { has_game_rule = { rule = cap_stab_loss_max option = P4 } } set_temp_variable = { cap_p_stab_max = 4 } }
 
 	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = DISABLED } } set_temp_variable = { cap_p_ws_max = 0 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P0_5 } } set_temp_variable = { cap_p_ws_max = 0.5 } }
+	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P1 } } set_temp_variable = { cap_p_ws_max = 1 } }
 	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P2 } } set_temp_variable = { cap_p_ws_max = 2 } }
 	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P4 } } set_temp_variable = { cap_p_ws_max = 4 } }
 	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P6 } } set_temp_variable = { cap_p_ws_max = 6 } }
 	if = { limit = { has_game_rule = { rule = cap_ws_loss_max option = P8 } } set_temp_variable = { cap_p_ws_max = 8 } }
+
+	if = { limit = { has_game_rule = { rule = cap_major_scale option = P25 } } set_temp_variable = { cap_p_major_scale = 0.25 } }
+	if = { limit = { has_game_rule = { rule = cap_major_scale option = P50 } } set_temp_variable = { cap_p_major_scale = 0.5 } }
+	if = { limit = { has_game_rule = { rule = cap_major_scale option = P75 } } set_temp_variable = { cap_p_major_scale = 0.75 } }
+	if = { limit = { has_game_rule = { rule = cap_major_scale option = P100 } } set_temp_variable = { cap_p_major_scale = 1 } }
 
 	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P25 } } set_temp_variable = { cap_p_pen_limit = 25 } }
 	if = { limit = { has_game_rule = { rule = cap_pen_limit option = P50 } } set_temp_variable = { cap_p_pen_limit = 50 } }
@@ -155,6 +187,11 @@ cap_calc_surrender_loss = {
 		}
 		set_temp_variable = { cap_stab_delta = { value = cap_ease  multiply = cap_p_stab_max  multiply = -1 } }
 		set_temp_variable = { cap_ws_delta = { value = cap_ease  multiply = cap_p_ws_max  multiply = -1 } }
+		if = {
+			limit = { is_major = yes }
+			multiply_temp_variable = { cap_stab_delta = cap_p_major_scale }
+			multiply_temp_variable = { cap_ws_delta = cap_p_major_scale }
+		}
 	}
 }
 
